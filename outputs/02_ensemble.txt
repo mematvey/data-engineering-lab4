@@ -1,0 +1,46 @@
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 zkServer.sh status
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Mode: follower
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> 1..3 | ForEach-Object { "zk$_ - " + (docker exec zk$_-hw4 zkServer.sh status 2>&1 | Select-Object -Last 1) }
+zk1 - Mode: follower
+zk2 - Mode: follower
+zk3 - Mode: leader
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker stop zk3-hw4
+zk3-hw4
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> 1..3 | ForEach-Object { "zk$_ - " + (docker exec zk$_-hw4 zkServer.sh status 2>&1 | Select-Object -Last 1) }
+zk1 - Mode: follower
+zk2 - Mode: leader
+zk3 - Error response from daemon: container 05928cdf552393222b61a7a8b602751fb203f89f8889037af6d01ebb2fc351de is not running
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python tools\zkcmd.py zk1 "ls /"
+[zookeeper]
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker stop zk2-hw4
+zk2-hw4
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> 1..3 | ForEach-Object { "zk$_ - " + (docker exec zk$_-hw4 zkServer.sh status 2>&1 | Select-Object -Last 1) }
+zk1 - Error contacting service. It is probably not running.
+zk2 - Error response from daemon: container 3261fa9d5e0047e282183dc75924a8d965353b23622c839fdf10724246800b62 is not running
+zk3 - Error response from daemon: container 05928cdf552393222b61a7a8b602751fb203f89f8889037af6d01ebb2fc351de is not running
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 sh -c "echo srvr | nc localhost 2181"
+This ZooKeeper instance is not currently serving requests
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python tools\zkcmd.py zk1 "ls /" 15
+KeeperErrorCode = ConnectionLoss for /
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker start zk2-hw4 zk3-hw4
+zk2-hw4
+zk3-hw4
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> 1..3 | ForEach-Object { "zk$_ - " + (docker exec zk$_-hw4 zkServer.sh status 2>&1 | Select-Object -Last 1) }
+zk1 - Mode: follower
+zk2 - Mode: leader
+zk3 - Mode: follower
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python tools\zkcmd.py zk1 "ls /"
+[zookeeper]
+

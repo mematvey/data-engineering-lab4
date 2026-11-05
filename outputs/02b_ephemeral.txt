@@ -1,0 +1,28 @@
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python tools\ephemeral_demo.py
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec -i zk2-hw4 zkCli.sh -server zk2:2182     # окно 2
+[zk: zk2:2182(CONNECTED) 0] create -e /demo-ephemeral mematvey
+Created /demo-ephemeral
+[zk: zk2:2182(CONNECTED) 1] stat /demo-ephemeral
+cZxid = 0x300000003
+mZxid = 0x300000003
+pZxid = 0x300000003
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x2000047fd540000
+dataLength = 8
+numChildren = 0
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 zkCli.sh -server zk1:2181 ls /     # окно 1
+[demo-ephemeral, zookeeper]
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 zkCli.sh -server zk1:2181 get /demo-ephemeral     # окно 1
+mematvey
+
+[zk: zk2:2182(CONNECTED) 2] quit     # закрываю окно 2
+WatchedEvent state:Closed type:None path:null zxid: -1
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 zkCli.sh -server zk1:2181 ls /     # окно 1
+[zookeeper]
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 zkCli.sh -server zk1:2181 get /demo-ephemeral     # окно 1
+Node does not exist: /demo-ephemeral
+

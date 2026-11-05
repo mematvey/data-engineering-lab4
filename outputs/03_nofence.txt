@@ -1,0 +1,33 @@
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python src\run_scenario.py --run nofence --fencing 0
+[t=   0.00 c] [сценарий] запуск FENCING=0
+[t=   1.87 c] [сценарий] A (pid 30372) лидер, B (pid 12724) запасной
+[t=  17.47 c] [сценарий] приостановил лидера A (процессов 6), у него чекпоинтов: 20
+[t=  27.40 c] [сценарий] запасной B стал лидером в t=27.29 c, смена лидера заняла 9.8 с после паузы
+[t=  57.47 c] [сценарий] возобновил лидера A после паузы в 40.0 с
+[t=  59.78 c] [сценарий] оба координатора завершились: A код 0, B код 0
+[t=  59.82 c] [сценарий] указатель: версия 2, данные {"epoch": 1, "leader": "A", "key": "results/zk/nofence/epoch_1/stack_2.csv", "md5": "f47fc1deadb3f8173e6ab9833c9a7d30"}
+[t=  60.09 c] [сценарий] результатов в бакете: 2: results/zk/nofence/epoch_1/stack_2.csv, results/zk/nofence/epoch_2/stack_2.csv
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python src\verify.py --run nofence
+ДЗ 3: results/mapreduce/stack_2.csv: 14646 пар, сумма 57782, md5 f47fc1deadb3f8173e6ab9833c9a7d30
+results/zk/nofence/epoch_1/stack_2.csv: 14646 пар, сумма 57782, md5 f47fc1deadb3f8173e6ab9833c9a7d30
+  только в ДЗ 3: 0, только здесь: 0, разные счётчики: 0, файлы побайтово равны: True
+results/zk/nofence/epoch_2/stack_2.csv: 14646 пар, сумма 57782, md5 f47fc1deadb3f8173e6ab9833c9a7d30
+  только в ДЗ 3: 0, только здесь: 0, разные счётчики: 0, файлы побайтово равны: True
+ИТОГ: СОВПАЛО
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> Get-Content logs\nofence_A.log, logs\nofence_B.log -Encoding utf8 | Where-Object { $_ -match 'стал лидером|нашёл чекпоинты|записал результат|BadVersionError|состояние сессии|пересчитывать' } | Sort-Object { [double][regex]::Match($_, 't=\s*([\d.]+)').Groups[1].Value }
+[t=   0.74 c] [A] состояние сессии: CONNECTED
+[t=   0.87 c] [A] стал лидером: эпоха 1, версия указателя при выборе 0
+[t=   1.82 c] [B] состояние сессии: CONNECTED
+[t=  27.29 c] [B] стал лидером: эпоха 2, версия указателя при выборе 0
+[t=  29.22 c] [B] нашёл чекпоинты: 23 из 51, продолжаю с остатка
+[t=  44.75 c] [B] эпоха 2: записал результат results/zk/nofence/epoch_2/stack_2.csv, указатель теперь версии 1
+[t=  44.77 c] [B] состояние сессии: LOST
+[t=  57.47 c] [A] состояние сессии: SUSPENDED
+[t=  57.49 c] [A] состояние сессии: LOST
+[t=  57.51 c] [A] состояние сессии: CONNECTED
+[t=  58.11 c] [A] эпоха 1: чекпоинты 26 чанков уже лежат в бакете, пересчитывать не стал
+[t=  59.62 c] [A] эпоха 1: записал результат results/zk/nofence/epoch_1/stack_2.csv, указатель теперь версии 2
+[t=  59.63 c] [A] состояние сессии: LOST
+

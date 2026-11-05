@@ -1,0 +1,58 @@
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker compose ps --format "table {{.Name}}\t{{.Image}}\t{{.Ports}}"
+NAME      IMAGE             PORTS
+zk1-hw4   zookeeper:3.9.6   0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp
+zk2-hw4   zookeeper:3.9.6   0.0.0.0:2182->2182/tcp, [::]:2182->2182/tcp
+zk3-hw4   zookeeper:3.9.6   0.0.0.0:2183->2183/tcp, [::]:2183->2183/tcp
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker inspect zk1-hw4 --format "{{.Config.Entrypoint}} {{.Config.Cmd}}"
+[/docker-entrypoint.sh] [zkServer.sh start-foreground]
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> docker exec zk1-hw4 sh -c "java -version 2>&1 | head -2 | tail -1"
+OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> Get-Content zk\conf\zk1\zoo.cfg
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/data/zk1
+clientPort=2181
+admin.enableServer=false
+4lw.commands.whitelist=srvr,stat,mntr,ruok
+server.1=zk1:2888:3888
+server.2=zk2:2889:3889
+server.3=zk3:2890:3890
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> Get-Content zk\conf\zk2\zoo.cfg | Select-String "dataDir|clientPort"
+
+dataDir=/data/zk2
+clientPort=2182
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> Get-Content zk\conf\zk3\zoo.cfg | Select-String "dataDir|clientPort"
+
+dataDir=/data/zk3
+clientPort=2183
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> 1..3 | ForEach-Object { "zk$_ myid = " + (Get-Content zk\data\zk$_\myid) }
+zk1 myid = 1
+zk2 myid = 2
+zk3 myid = 3
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> curl.exe -s -o NUL -w "health %{http_code}`n" http://localhost:9200/health
+health 200
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> rclone copy ..\task2\data\it_vacancies_2024.csv rustfs:hh-lake/raw/ --stats-one-line --stats 30s -v --log-format nolevel 2>&1
+S3 bucket hh-lake path raw: Bucket "hh-lake" created with ACL ""
+      340 MiB / 808.353 MiB, 42%, 11.451 MiB/s, ETA 40s
+      635 MiB / 808.353 MiB, 79%, 9.826 MiB/s, ETA 17s
+it_vacancies_2024.csv: Multi-thread Copied (new)
+  808.353 MiB / 808.353 MiB, 100%, 5.477 MiB/s, ETA 0s
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> rclone lsf rustfs:hh-lake --recursive --files-only --format "ps"
+raw/it_vacancies_2024.csv;847619384
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> rclone md5sum rustfs:hh-lake/raw/it_vacancies_2024.csv
+45041a115287e29b41fc8f82818ec5a6  it_vacancies_2024.csv
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> (Get-FileHash ..\task2\data\it_vacancies_2024.csv -Algorithm MD5).Hash.ToLower()
+45041a115287e29b41fc8f82818ec5a6
+

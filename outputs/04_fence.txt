@@ -1,0 +1,31 @@
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python src\run_scenario.py --run fence --fencing 1
+[t=   0.00 c] [сценарий] запуск FENCING=1
+[t=   1.78 c] [сценарий] A (pid 28576) лидер, B (pid 6348) запасной
+[t=  12.16 c] [сценарий] приостановил лидера A (процессов 6), у него чекпоинтов: 20
+[t=  21.47 c] [сценарий] запасной B стал лидером в t=21.41 c, смена лидера заняла 9.2 с после паузы
+[t=  52.17 c] [сценарий] возобновил лидера A после паузы в 40.0 с
+[t=  55.84 c] [сценарий] оба координатора завершились: A код 3, B код 0
+[t=  55.89 c] [сценарий] указатель: версия 1, данные {"epoch": 2, "leader": "B", "key": "results/zk/fence/epoch_2/stack_2.csv", "md5": "f47fc1deadb3f8173e6ab9833c9a7d30"}
+[t=  56.01 c] [сценарий] результатов в бакете: 1: results/zk/fence/epoch_2/stack_2.csv
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> uv run python src\verify.py --run fence
+ДЗ 3: results/mapreduce/stack_2.csv: 14646 пар, сумма 57782, md5 f47fc1deadb3f8173e6ab9833c9a7d30
+results/zk/fence/epoch_2/stack_2.csv: 14646 пар, сумма 57782, md5 f47fc1deadb3f8173e6ab9833c9a7d30
+  только в ДЗ 3: 0, только здесь: 0, разные счётчики: 0, файлы побайтово равны: True
+ИТОГ: СОВПАЛО
+
+PS C:\Users\memel\Desktop\Материалы, лабы\5 семестр\Инженерия Данных\data-engineering-lab4> Get-Content logs\fence_A.log, logs\fence_B.log -Encoding utf8 | Where-Object { $_ -match 'стал лидером|нашёл чекпоинты|записал результат|BadVersionError|состояние сессии|пересчитывать' } | Sort-Object { [double][regex]::Match($_, 't=\s*([\d.]+)').Groups[1].Value }
+[t=   0.78 c] [A] состояние сессии: CONNECTED
+[t=   0.87 c] [A] стал лидером: эпоха 1, версия указателя при выборе 0
+[t=   1.73 c] [B] состояние сессии: CONNECTED
+[t=  21.41 c] [B] стал лидером: эпоха 2, версия указателя при выборе 0
+[t=  23.10 c] [B] нашёл чекпоинты: 20 из 51, продолжаю с остатка
+[t=  41.07 c] [B] эпоха 2: записал результат results/zk/fence/epoch_2/stack_2.csv, указатель теперь версии 1
+[t=  41.08 c] [B] состояние сессии: LOST
+[t=  52.17 c] [A] состояние сессии: SUSPENDED
+[t=  52.18 c] [A] состояние сессии: LOST
+[t=  52.20 c] [A] состояние сессии: CONNECTED
+[t=  53.17 c] [A] эпоха 1: чекпоинты 27 чанков уже лежат в бакете, пересчитывать не стал
+[t=  55.68 c] [A] эпоха 1: запись указателя отклонена, BadVersionError: ждал версию 0, в ZooKeeper версия 1
+[t=  55.69 c] [A] состояние сессии: LOST
+
