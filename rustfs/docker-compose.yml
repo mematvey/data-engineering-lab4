@@ -1,0 +1,24 @@
+name: rustfs-lab4
+
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: rustfs-hw4
+    ports:
+      - "9200:9000"
+      - "9201:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
+      RUSTFS_VOLUMES: /data/rustfs{0...5}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_UNSAFE_BYPASS_DISK_CHECK: "true"
+    volumes:
+      - ./disks/rustfs0:/data/rustfs0
+      - ./disks/rustfs1:/data/rustfs1
+      - ./disks/rustfs2:/data/rustfs2
+      - ./disks/rustfs3:/data/rustfs3
+      - ./disks/rustfs4:/data/rustfs4
+      - ./disks/rustfs5:/data/rustfs5

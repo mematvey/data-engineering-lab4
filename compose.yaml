@@ -1,0 +1,37 @@
+name: hw4
+
+x-zk: &zk
+  image: zookeeper:3.9.6
+  restart: "no"
+
+services:
+  zk1:
+    <<: *zk
+    container_name: zk1-hw4
+    hostname: zk1
+    environment:
+      ZOO_DATA_DIR: /data/zk1
+    ports: ["2181:2181"]
+    volumes:
+      - ./zk/conf/zk1:/conf
+      - ./zk/data/zk1:/data/zk1
+  zk2:
+    <<: *zk
+    container_name: zk2-hw4
+    hostname: zk2
+    environment:
+      ZOO_DATA_DIR: /data/zk2
+    ports: ["2182:2182"]
+    volumes:
+      - ./zk/conf/zk2:/conf
+      - ./zk/data/zk2:/data/zk2
+  zk3:
+    <<: *zk
+    container_name: zk3-hw4
+    hostname: zk3
+    environment:
+      ZOO_DATA_DIR: /data/zk3
+    ports: ["2183:2183"]
+    volumes:
+      - ./zk/conf/zk3:/conf
+      - ./zk/data/zk3:/data/zk3
